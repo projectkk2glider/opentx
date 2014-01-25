@@ -66,9 +66,12 @@ static const int8_t volumeScale[VOLUME_LEVEL_MAX+1] =
 } ;
 
 #if !defined(SIMU)
-#define setVolume(v) I2C_set_volume(volumeScale[min<uint8_t>(v, VOLUME_LEVEL_MAX)])
+//#define setVolume(v) I2C_set_volume(volumeScale[min<uint8_t>(v, VOLUME_LEVEL_MAX)])
+extern void setVolume(uint8_t volume); 
 #else
 #define setVolume(v)
 #endif
+
+extern void adjustVolume( void );
 
 #endif

@@ -316,6 +316,7 @@ void audioTask(void* pdata)
 
   while (1) {
     audioQueue.wakeup();
+	adjustVolume();
     CoTickDelay(2/*4ms*/);
   }
 }

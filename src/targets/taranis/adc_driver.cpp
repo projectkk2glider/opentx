@@ -65,6 +65,11 @@ const char ana_direction[NUMBER_ANALOG] = {0,1,0,1,  1,1,1,0,  0};
 const char ana_direction[NUMBER_ANALOG] = {0,1,0,1,  1,0,1,0,  0};
 #endif
 
+//smooth volume adjustment vars
+uint8_t current_wcr;
+uint8_t required_wcr;
+
+
 void adcInit()
 {
   RCC->APB2ENR |= RCC_APB2ENR_ADC1EN ;                    // Enable clock
@@ -101,6 +106,8 @@ void adcInit()
   DMA2_Stream0->PAR = CONVERT_PTR(&ADC1->DR);
   DMA2_Stream0->M0AR = CONVERT_PTR(Analog_values);
   DMA2_Stream0->FCR = DMA_SxFCR_DMDIS | DMA_SxFCR_FTH_0 ;
+
+  current_wcr = 64;    // start wiper position, per CAT5137 datasheet
 }
 
 void adcRead()
@@ -139,6 +146,22 @@ void adcStop()
 
 
 
+void setVolume(uint8_t volume)
+{
+  required_wcr = volumeScale[min<uint8_t>(volume, VOLUME_LEVEL_MAX)];
+}
 
+
+void adjustVolume( void )
+{
+  if ( current_wcr > required_wcr )
+  {
+    I2C_set_volume(--current_wcr);
+  }
+  else if ( current_wcr < required_wcr )
+  {
+    I2C_set_volume(++current_wcr);
+  }
+}
 
 
