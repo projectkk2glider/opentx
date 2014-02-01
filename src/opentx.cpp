@@ -3772,9 +3772,29 @@ void perMain()
 #if defined(PCBTARANIS)
   static bool usbStarted = false;
   if (!usbStarted && usbPlugged()) {
-    opentxClose();
+    //opentxClose();
     usbStart();
     usbStarted = true;
+  }
+  
+  if ( usbStarted )
+  {
+    static uint8_t n = 0;
+    if ( ++n >= 2 )
+    {
+      n = 0;
+      //send jojstick position
+      uint8_t *buf;
+      
+      buf = USBD_HID_GetPos();
+      if((buf[1] != 0) ||(buf[2] != 0))
+      {
+        USBD_HID_SendReport (&USB_OTG_dev, 
+                             buf,
+                             4);
+      } 
+      
+    }
   }
 #endif
 
@@ -3846,7 +3866,7 @@ void perMain()
   const char *warn = s_warning;
   uint8_t menu = s_menu_count;
 
-  if (usbPlugged()) {
+  if ( false /*usbPlugged()*/) {
     menuMainView(0);
   }
   else {

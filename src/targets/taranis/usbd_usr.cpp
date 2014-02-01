@@ -119,6 +119,7 @@ void USBD_USR_DeviceConnected (void)
 */
 void USBD_USR_DeviceDisconnected (void)
 {
+  opentxClose();
   NVIC_SystemReset();
 }
 
