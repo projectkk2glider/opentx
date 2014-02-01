@@ -119,7 +119,9 @@ void USBD_USR_DeviceConnected (void)
 */
 void USBD_USR_DeviceDisconnected (void)
 {
-  opentxClose();
+  if ( usbMode != um_MassStorage ) {
+    opentxClose();
+  }
   NVIC_SystemReset();
 }
 

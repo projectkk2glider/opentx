@@ -55,15 +55,15 @@
   */ 
 
 #define USBD_VID                   0x0483
-#define USBD_PID                     0x5710
+#define USBD_PID                   0x5720
 
 #define USBD_LANGID_STRING         0x409
-#define USBD_MANUFACTURER_STRING      "STMicroelectronics"
+#define USBD_MANUFACTURER_STRING   "FrSky"
 
-#define USBD_PRODUCT_FS_STRING        "Joystick in FS Mode"
-#define USBD_SERIALNUMBER_FS_STRING   "00000000011C"
-#define USBD_CONFIGURATION_FS_STRING  "HID Config"
-#define USBD_INTERFACE_FS_STRING      "HID Interface"
+#define USBD_PRODUCT_FS_STRING        "FrSky Taranis"
+#define USBD_SERIALNUMBER_FS_STRING   "00000000001B"
+#define USBD_CONFIGURATION_FS_STRING  "MSC/HID Config"
+#define USBD_INTERFACE_FS_STRING      "MSC/HID Interface"
 
 USBD_DEVICE USR_desc =
 {

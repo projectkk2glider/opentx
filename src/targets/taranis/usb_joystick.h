@@ -1,5 +1,9 @@
 
+#ifndef usb_joystick_h
+#define usb_joystick_h
 
-uint8_t *USBD_HID_GetPos (void);
 
 
+void usb_joystick_update(void);
+
+#endif //usb_joystick_h

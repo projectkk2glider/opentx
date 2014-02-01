@@ -62,6 +62,11 @@ OS_TID debugTaskId;
 OS_STK debugStack[DEBUG_STACK_SIZE];
 #endif
 
+#if defined(PCBTARANIS)
+enum eUsbMode usbMode;
+#endif
+
+
 OS_MutexID audioMutex;
 OS_MutexID mixerMutex;
 
@@ -3772,28 +3777,30 @@ void perMain()
 #if defined(PCBTARANIS)
   static bool usbStarted = false;
   if (!usbStarted && usbPlugged()) {
-    //opentxClose();
+    //decide on usb mode
+    //if switch SA is UP then joystick
+    //else mass storage
+    if ( switchState(SW_SA0) ) {
+      usbMode = um_Joystick;
+    }
+    else {
+      usbMode = um_MassStorage ;
+    }
+    if ( usbMode == um_MassStorage ) {
+      opentxClose();
+    }
     usbStart();
     usbStarted = true;
   }
   
-  if ( usbStarted )
+  if ( usbStarted && ( usbMode == um_Joystick ) )
   {
     static uint8_t n = 0;
     if ( ++n >= 2 )
     {
       n = 0;
-      //send jojstick position
-      uint8_t *buf;
-      
-      buf = USBD_HID_GetPos();
-      if((buf[1] != 0) ||(buf[2] != 0))
-      {
-        USBD_HID_SendReport (&USB_OTG_dev, 
-                             buf,
-                             4);
-      } 
-      
+      //send joystick position
+      usb_joystick_update();
     }
   }
 #endif
@@ -3866,7 +3873,7 @@ void perMain()
   const char *warn = s_warning;
   uint8_t menu = s_menu_count;
 
-  if ( false /*usbPlugged()*/) {
+  if ( usbPlugged() && (usbMode == um_MassStorage) ) {
     menuMainView(0);
   }
   else {

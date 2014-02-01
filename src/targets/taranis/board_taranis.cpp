@@ -128,7 +128,17 @@ void usbInit()
 
 void usbStart()
 {
-  USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_HID_cb, &USR_cb);
+  if ( usbMode == um_MassStorage) 
+  {
+    //intialize USB as MSC device
+    USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_MSC_cb, &USR_cb);
+  }
+  else   
+  {
+    //intialize USB as HID device
+    USBD_Init(&USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, &USBD_HID_cb, &USR_cb);
+  }
+
 }
 #endif
 
