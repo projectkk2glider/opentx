@@ -3795,13 +3795,15 @@ void perMain()
   
   if ( usbStarted && ( usbMode == um_Joystick ) )
   {
-    static uint8_t n = 0;
-    if ( ++n >= 2 )
-    {
-      n = 0;
+    //currently we get here every ~30ms
+    
+    //static uint8_t n = 0;
+    //if ( ++n >= 2 )
+    //{
+      //n = 0;
       //send joystick position
       usb_joystick_update();
-    }
+    //}
   }
 #endif
 
@@ -4364,7 +4366,7 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 
   startPulses();
 
-  wdt_enable(WDTO_500MS);
+  //wdt_enable(WDTO_500MS);
 }
 
 #if defined(CPUARM)
@@ -4401,6 +4403,13 @@ void menusTask(void * pdata)
 
   while (pwrCheck() != e_power_off) {
     perMain();
+#if 0
+    U64 start = CoGetOSTime();
+      lcdRefresh();
+    int32_t diff = CoGetOSTime() - start;
+    lcd_outdezAtt(50, 10, (int)diff*2);
+    lcdRefresh();
+#endif
 #if defined(PCBSKY9X)
     for (uint8_t i=0; i<5; i++) {
       usbMassStorage();
