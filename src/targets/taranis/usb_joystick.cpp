@@ -3,39 +3,33 @@
 #include "usb_joystick.h"
 
 
+/*
+  Prepare and send new USB data packet
 
+  The format of HID_Buffer is defined by
+  USB endpoint description can be found in 
+  file usb_hid_joystick.c, variable HID_JOYSTICK_ReportDesc
+*/
 void usb_joystick_update(void)
 {
-  //get current joystick values 
-  //static uint8_t HID_Buffer [4];
-  static uint8_t HID_Buffer [8];
-  
+  static uint8_t HID_Buffer[HID_IN_PACKET];
   
   pauseMixerCalculations();
-  
-  HID_Buffer[0] = 0; //butons
-  HID_Buffer[1] = channelOutputs[0] / 10;   //x axis (positive is right mouse movement)
-  HID_Buffer[2] = channelOutputs[1] / 10;   //y axis (positive is down mouse movement)
-  HID_Buffer[3] = 0;
-  HID_Buffer[4] = 0;
 
-/*    
-  for (int i = 0; i < 6; ++i)
-  {
-    HID_Buffer[i] = channelOutputs[i] / 10;
-    //++p;
-  }
   //buttons
-  HID_Buffer[6] = 0;
-  HID_Buffer[7] = 0;
- */ 
+  HID_Buffer[0] = 0; //buttons
+  for (int i = 0; i < 8; ++i) {
+    if ( channelOutputs[i+8] > 0 ) {
+      HID_Buffer[0] |= (1 << i);
+    } 
+  }
+
+  //analog values
+  HID_Buffer[1] = channelOutputs[0] / 10;
+  HID_Buffer[2] = channelOutputs[1] / 10;
+  HID_Buffer[3] = channelOutputs[2] / 10;
+  HID_Buffer[4] = channelOutputs[3] / 10;
+
   resumeMixerCalculations();
-  
-  //while(1);
-  
-  //send new values
-  //if((HID_Buffer[1] != 0) ||(HID_Buffer[2] != 0))
-  {
-    USBD_HID_SendReport (&USB_OTG_dev, HID_Buffer, 5 );
-  }     
+  USBD_HID_SendReport (&USB_OTG_dev, HID_Buffer, HID_IN_PACKET );
 }

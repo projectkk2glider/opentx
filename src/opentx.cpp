@@ -4366,7 +4366,7 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 
   startPulses();
 
-  //wdt_enable(WDTO_500MS);
+  wdt_enable(WDTO_500MS);
 }
 
 #if defined(CPUARM)

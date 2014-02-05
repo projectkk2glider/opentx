@@ -235,106 +235,23 @@ __ALIGN_BEGIN static uint8_t USBD_HID_Desc[USB_HID_DESC_SIZ] __ALIGN_END=
   #if defined ( __ICCARM__ ) /*!< IAR Compiler */
     #pragma data_alignment=4   
   #endif
-#endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */  
-#if 0
-__ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE] __ALIGN_END =
-{
-  0x05,   0x01,
-  0x09,   0x02,
-  0xA1,   0x01,
-  0x09,   0x01,
-  
-  0xA1,   0x00,
-  0x05,   0x09,
-  0x19,   0x01,
-  0x29,   0x03,
-  
-  0x15,   0x00,
-  0x25,   0x01,
-  0x95,   0x03,
-  0x75,   0x01,
-  
-  0x81,   0x02,
-  0x95,   0x01,
-  0x75,   0x05,
-  0x81,   0x01,
-  
-  0x05,   0x01,
-  0x09,   0x30,
-  0x09,   0x31,
-  0x09,   0x38,
-  
-  0x15,   0x81,
-  0x25,   0x7F,
-  0x75,   0x08,
-  0x95,   0x03,
-  
-  0x81,   0x06,
-  0xC0,   0x09,
-  0x3c,   0x05,
-  0xff,   0x09,
-  
-  0x01,   0x15,
-  0x00,   0x25,
-  0x01,   0x75,
-  0x01,   0x95,
-  
-  0x02,   0xb1,
-  0x22,   0x75,
-  0x06,   0x95,
-  0x01,   0xb1,
-  
-  0x01,   0xc0
-}; 
-#else
+#endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */ 
+/*
+  This USB HID endpoint report description defines a device with:
+    * 8 digital buttons
+    * 4 analog axes with 8bit resolution
 
-#if 0
-__ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE] __ALIGN_END =
-{
- 0x05, 0x01, // USAGE_PAGE (Generic Desktop)
- 0x09, 0x05, // USAGE (Game Pad)
- 0xa1, 0x01, // COLLECTION (Application)
- 0x05, 0x02, // USAGE_PAGE (Simulation Controls)
- 0x09, 0xbb, // USAGE (Throttle)
- 0x15, 0x00, // LOGICAL_MINIMUM (0)
- 0x25, 0x1f, // LOGICAL_MAXIMUM (31)
- 0x75, 0x08, // REPORT_SIZE (8)
- 0x95, 0x01, // REPORT_COUNT (1)
- 0x81, 0x02, // INPUT (Data,Var,Abs)
- 0x05, 0x02, // USAGE_PAGE (Simulation Controls)
- 0x09, 0xbb, // USAGE (Throttle)
- 0x15, 0x00, // LOGICAL_MINIMUM (0)
- 0x25, 0x1f, // LOGICAL_MAXIMUM (31)
- 0x75, 0x08, // REPORT_SIZE (8)
- 0x95, 0x01, // REPORT_COUNT (1)
- 0x81, 0x02, // INPUT (Data,Var,Abs)
- 0x05, 0x01, // USAGE_PAGE (Generic Desktop)
- 0xa1, 0x00, // COLLECTION (Physical)
- 0x09, 0x30, // USAGE (X)
- 0x09, 0x31, // USAGE (Y)
- 0x09, 0x32, // USAGE (Z)
- 0x09, 0x33, // USAGE (Rx)
- 0x15, 0x81, // LOGICAL_MINIMUM (-127)
- 0x25, 0x7f, // LOGICAL_MAXIMUM (127)
- 0x75, 0x08, // REPORT_SIZE (8)
- 0x95, 0x04, // REPORT_COUNT (4)
- 0x81, 0x02, // INPUT (Data,Var,Abs)
- 0x05, 0x09, // USAGE_PAGE (Button)
- 0x19, 0x01, // USAGE_MINIMUM (Button 1)
- 0x29, 0x10, // USAGE_MAXIMUM (Button 16)
- 0x15, 0x00, // LOGICAL_MINIMUM (0)
- 0x25, 0x01, // LOGICAL_MAXIMUM (1)
- 0x75, 0x01, // REPORT_SIZE (1)
- 0x95, 0x10, // REPORT_COUNT (16)
- 0x81, 0x02, // INPUT (Data,Var,Abs)
- 0xc0, // END_COLLECTION
- 0xc0 // END_COLLECTION
-};
-#endif
-// C:\Documents and Settings\user\My Documents\Gamepad-8buttons_4axes_8bit.h
+  Repot packet described as C struct is:
 
-
-__ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE] __ALIGN_END =
+  struct {
+    uint8_t buttons; //bit 0 - button 1, bit 1 - button 2, ..., mapped to channels 9-17, on if channel > 0
+    uint8_t X;  //analog value, mapped to channel 1
+    uint8_t Y;  //analog value, mapped to channel 2
+    uint8_t Z;  //analog value, mapped to channel 3
+    uint8_y Rx; //analog value, mapped to channel 4
+  }
+*/ 
+__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE] __ALIGN_END =
 {
     0x05, 0x01,                    //     USAGE_PAGE (Generic Desktop)
     0x09, 0x05,                    //     USAGE (Game Pad)
@@ -361,7 +278,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_JOYSTICK_REPORT_DESC_SIZE]
     0xc0,                          //       END_COLLECTION
     0xc0                           //     END_COLLECTION
 };
-#endif
+
 
 /**
   * @}
@@ -468,7 +385,7 @@ static uint8_t  USBD_HID_Setup (void  *pdev,
       if( req->wValue >> 8 == HID_REPORT_DESC)
       {
         len = MIN(HID_JOYSTICK_REPORT_DESC_SIZE , req->wLength);
-        pbuf = HID_MOUSE_ReportDesc; // wiiccReportDescriptor; //
+        pbuf = HID_JOYSTICK_ReportDesc; // wiiccReportDescriptor; //
       }
       else if( req->wValue >> 8 == HID_DESCRIPTOR_TYPE)
       {
@@ -501,6 +418,8 @@ static uint8_t  USBD_HID_Setup (void  *pdev,
   return USBD_OK;
 }
 
+static uint8_t ReportSent = 1;
+
 /**
   * @brief  USBD_HID_SendReport 
   *         Send HID Report
@@ -514,7 +433,11 @@ uint8_t USBD_HID_SendReport     (USB_OTG_CORE_HANDLE  *pdev,
 {
   if (pdev->dev.device_status == USB_OTG_CONFIGURED )
   {
-    DCD_EP_Tx (pdev, HID_IN_EP, report, len);
+    if ( ReportSent )
+    {
+      ReportSent = 0;
+      DCD_EP_Tx (pdev, HID_IN_EP, report, len);
+    }
   }
   return USBD_OK;
 }
@@ -542,7 +465,7 @@ static uint8_t  *USBD_HID_GetCfgDesc (uint8_t speed, uint16_t *length)
 static uint8_t  USBD_HID_DataIn (void  *pdev, 
                               uint8_t epnum)
 {
-  
+  ReportSent = 1;
   /* Ensure that the FIFO is empty before a new transfer, this condition could 
   be caused by  a new transfer before the end of the previous transfer */
   DCD_EP_Flush(pdev, HID_IN_EP);
