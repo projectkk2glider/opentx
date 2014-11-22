@@ -114,6 +114,7 @@ static void LCD_Init()
 static void LCD_Init()
 {	
   AspiCmd(0x2B);   //Panel loading set ,Internal VLCD.
+  Delay(20);     // additional delay for test purposes
   AspiCmd(0x25);   //Temperature compensation curve definition: 0x25 = -0.05%/oC
   AspiCmd(0xEA);	//set bias=1/10 :Command table NO.27
   AspiCmd(0x81);	//Set Vop
@@ -315,12 +316,15 @@ void lcdInit()
 #if defined(REVPLUS)
   initLcdSpi() ;
 #endif
+  Delay(100);     // additional delay for test purposes
   
   LCD_RST_HIGH();
   Delay(5);
+  Delay(100);     // additional delay for test purposes
 
   LCD_RST_LOW();
   Delay(120); //11ms
+  Delay(100);     // additional delay for test purposes
 
   LCD_RST_HIGH();
   Delay(2500);
@@ -329,6 +333,7 @@ void lcdInit()
   Delay(2500);
   LCD_Init();
   Delay(120);
+  Delay(100);     // additional delay for test purposes
 
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
 }
