@@ -49,7 +49,7 @@ void initLcdSpi()
   RCC->APB1ENR |= RCC_APB1ENR_SPI3EN ;    // Enable clock
   // APB1 clock / 2 = 133nS per clock
   SPI3->CR1 = 0 ;		// Clear any mode error
-  SPI3->CR1 = SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_CPOL | SPI_CR1_CPHA ;
+  SPI3->CR1 = SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_CPOL | SPI_CR1_CPHA | SPI_CR1_BR_0;   // SPI_CR1_BR_0 = APB1 clock / 4 (for testing)
   SPI3->CR2 = 0 ;
   SPI3->CR1 |= SPI_CR1_MSTR ;	// Make sure in case SSM/SSI needed to be set first
   SPI3->CR1 |= SPI_CR1_SPE ;
@@ -161,7 +161,14 @@ void Set_Address(u8 x, u8 y)
     LCD_MOSI_HIGH(); \
   else \
     LCD_MOSI_LOW(); \
+  __no_operation(); \
+  __no_operation(); \
+  __no_operation(); \
+  __no_operation(); \
   LCD_CLK_LOW(); \
+  __no_operation(); \
+  __no_operation(); \
+  __no_operation(); \
   __no_operation(); \
   LCD_CLK_HIGH();
 
@@ -206,6 +213,10 @@ void lcdRefresh()
     LCD_CLK_HIGH();
     LCD_A0_HIGH();
     LCD_NCS_LOW();
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation();
 
     for (uint32_t x=0; x<LCD_W; x++) {
       uint8_t b = p[x];
@@ -219,6 +230,10 @@ void lcdRefresh()
 
     LCD_NCS_HIGH();
     LCD_A0_HIGH();
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation();
 
     WriteData(0);
   }

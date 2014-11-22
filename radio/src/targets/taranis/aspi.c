@@ -55,7 +55,14 @@ void AspiCmd(u8 Command_Byte)
 
     LCD_CLK_HIGH();
     __no_operation();
-    LCD_NCS_LOW();  
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    LCD_NCS_LOW(); 
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation(); 
  
     while (i--) {
       LCD_CLK_LOW();
@@ -67,12 +74,24 @@ void AspiCmd(u8 Command_Byte)
 
       Command_Byte <<= 1;
 
+      __no_operation();
+      __no_operation();
+      __no_operation();
+      __no_operation();
+
       LCD_CLK_HIGH();
+      __no_operation();
+      __no_operation();
+      __no_operation();
       __no_operation();
     }
 
     LCD_NCS_HIGH();  
     LCD_A0_HIGH();
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation();
 }
 #endif
 
@@ -106,6 +125,10 @@ void AspiData(u8 Para_data)
     LCD_CLK_HIGH();
     LCD_A0_HIGH();
     LCD_NCS_LOW();
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation();
     while (i--) {
     	LCD_CLK_LOW();
         if (Para_data&0x80)
@@ -114,11 +137,21 @@ void AspiData(u8 Para_data)
           LCD_MOSI_LOW();
         Para_data <<= 1;
         __no_operation();
+        __no_operation();
+        __no_operation();
+        __no_operation();
         LCD_CLK_HIGH();
+        __no_operation();
+        __no_operation();
+        __no_operation();
         __no_operation();
     }
     LCD_NCS_HIGH();
     LCD_A0_HIGH();  
+    __no_operation();
+    __no_operation();
+    __no_operation();
+    __no_operation();
 }
 
 /***
