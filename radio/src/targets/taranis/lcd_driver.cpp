@@ -21,14 +21,18 @@
 #endif
 
 //275us
-void Delay(volatile unsigned int ms)
+static void Delay(volatile unsigned int ms)
 {
+#if defined(PCBTARANIS) && !defined(BOOT)
+  CoTickDelay((ms*CFG_SYSTICK_FREQ + 500)/1000);
+#else
   volatile u8 i;
   while(ms != 0) {
     for(i=0;i<250;i++) {}
     for(i=0;i<75;i++) {}
     ms--;
   }
+#endif
 }
 
 #if defined(REVPLUS)
