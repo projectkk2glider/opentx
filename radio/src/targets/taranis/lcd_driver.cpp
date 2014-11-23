@@ -23,7 +23,7 @@
 //275us
 static void Delay(volatile unsigned int ms)
 {
-#if defined(PCBTARANIS) && !defined(BOOT)
+#if !defined(BOOT)
   CoTickDelay((ms*CFG_SYSTICK_FREQ + 500)/1000);
 #else
   volatile u8 i;
