@@ -20,20 +20,23 @@
   #define CONTRAST_OFS 5
 #endif
 
-//275us
-static void Delay(volatile unsigned int ms)
-{
 #if !defined(BOOT)
+static void Delay(uint32_t ms)
+{
   CoTickDelay((ms*CFG_SYSTICK_FREQ + 500)/1000);
-#else
-  volatile u8 i;
+}
+#else  // #if !defined(BOOT)
+static void __attribute__((optimize("O0"))) Delay(volatile uint32_t ms)
+{
+  //This delay is tuned for Taranis running at 120MHz clock!!!
   while(ms != 0) {
-    for(i=0;i<250;i++) {}
-    for(i=0;i<75;i++) {}
+    for(volatile uint32_t i=0;i<300;i++) {
+      for(volatile uint32_t j=0;j<26;j++) {}
+    }
     ms--;
   }
-#endif
 }
+#endif // #if !defined(BOOT)
 
 #if defined(REVPLUS)
 static void LCD_Hardware_Init() ;
@@ -316,23 +319,23 @@ void lcdInit()
 #if defined(REVPLUS)
   initLcdSpi() ;
 #endif
-  Delay(100);     // additional delay for test purposes
   
   LCD_RST_HIGH();
-  Delay(5);
-  Delay(100);     // additional delay for test purposes
+  Delay(20);
 
   LCD_RST_LOW();
-  Delay(120); //11ms
-  Delay(100);     // additional delay for test purposes
+  // Delay(120); //11ms   //real life delay was 4ms
+  Delay(20);     // tuned delay
 
   LCD_RST_HIGH();
-  Delay(2500);
+  // Delay(2500);  //real life delay was 83ms
+  Delay(300);     // longer delay after reset
  
   AspiCmd(0xE2);
-  Delay(2500);
+  // Delay(2500);   //real life delay was 83ms
+  Delay(100);     // longer delay 
   LCD_Init();
-  Delay(120);
+  // Delay(120);    //real life delay was 4ms
   Delay(100);     // additional delay for test purposes
 
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
