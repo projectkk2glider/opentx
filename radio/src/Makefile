@@ -307,6 +307,12 @@ TRACE_SD_CARD = NO
 TRACE_FATFS = NO
 TRACE_AUDIO = NO
 
+# Enable timers that time various parts of opentx code
+# Values = NO, YES
+# YES - timers active
+# NO - timers disabled
+DEBUG_TIMERS = NO
+
 #------- END BUILD OPTIONS ---------------------------
 
 # Define programs and commands.
@@ -784,6 +790,10 @@ ifeq ($(PCB), TARANIS)
   endif
   ifeq ($(DEBUG), YES)
     CPPSRC += debug.cpp
+  endif
+  ifeq ($(DEBUG_TIMERS), YES)
+    CPPDEFS += -DDEBUG_TIMERS
+    # CPPSRC += debug_timers.cpp
   endif
   ifeq ($(DSM2), PPM)
     CPPSRC += pulses/dsm2_arm.cpp

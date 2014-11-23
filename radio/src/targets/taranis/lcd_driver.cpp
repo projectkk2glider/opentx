@@ -309,8 +309,73 @@ void LCD_OFF()
   Delay(20);	
 }
 
+#if defined(DEBUG_TIMERS)
+
+#include "debug_timers.h"
+
+DebugTimer debugTimer1;
+DebugTimer debugTimer2;
+DebugTimer debugTimer3;
+DebugTimer debugTimer4;
+
+static void __attribute__((optimize("Os"))) Delay_s(volatile unsigned int ms)
+{
+  volatile u8 i;
+  while(ms != 0) {
+    for(i=0;i<250;i++) {}
+    for(i=0;i<75;i++) {}
+    ms--;
+  }
+}
+
+
+static void __attribute__((optimize("O0"))) Delay_0(volatile unsigned int ms)
+{
+  volatile u8 i;
+  while(ms != 0) {
+    for(i=0;i<250;i++) {}
+    for(i=0;i<75;i++) {}
+    ms--;
+  }
+}
+
+static void __attribute__((optimize("O2"))) Delay_2(volatile unsigned int ms)
+{
+  volatile u8 i;
+  while(ms != 0) {
+    for(i=0;i<250;i++) {}
+    for(i=0;i<75;i++) {}
+    ms--;
+  }
+}
+
+
+void testDelays()
+{
+  DEBUG_TIMER_START(debugTimer1);
+  Delay_s(3000);
+  DEBUG_TIMER_STOP(debugTimer1);
+
+  DEBUG_TIMER_START(debugTimer2);
+  Delay_0(3000);
+  DEBUG_TIMER_STOP(debugTimer2);
+
+  DEBUG_TIMER_START(debugTimer3);
+  Delay_2(3000);
+  DEBUG_TIMER_STOP(debugTimer3);
+
+  DEBUG_TIMER_START(debugTimer4);
+  Delay_s(30);
+  DEBUG_TIMER_STOP(debugTimer4);
+}
+#endif //#if defined(DEBUG_TIMERS)
+
+
 void lcdInit()
 {
+#if defined(DEBUG_TIMERS)
+  testDelays();
+#endif  
   LCD_BL_Config();
   LCD_Hardware_Init();
 #if defined(REVPLUS)
