@@ -318,33 +318,46 @@ DebugTimer debugTimer2;
 DebugTimer debugTimer3;
 DebugTimer debugTimer4;
 
-static void __attribute__((optimize("Os"))) Delay_s(volatile unsigned int ms)
+//result of measurement: ms=500, measured delay=580ms
+static void __attribute__((optimize("O0"))) Delay_1(volatile unsigned int ms)
 {
   volatile u8 i;
+  ms *= 32;
   while(ms != 0) {
     for(i=0;i<250;i++) {}
-    for(i=0;i<75;i++) {}
     ms--;
   }
 }
 
-
-static void __attribute__((optimize("O0"))) Delay_0(volatile unsigned int ms)
+//result of measurement: ms=500, measured delay=610ms
+static void __attribute__((optimize("O0"))) Delay_2(volatile unsigned int ms)
 {
-  volatile u8 i;
+  volatile uint32_t i;
   while(ms != 0) {
-    for(i=0;i<250;i++) {}
-    for(i=0;i<75;i++) {}
+    for(i=0;i<250*30;i++) {}
+    for(i=0;i<75*30;i++) {}
     ms--;
   }
 }
 
-static void __attribute__((optimize("O2"))) Delay_2(volatile unsigned int ms)
+//result of measurement: ms=500, measured delay=500ms
+static void __attribute__((optimize("O0"))) Delay_3(volatile unsigned int ms)
 {
-  volatile u8 i;
   while(ms != 0) {
-    for(i=0;i<250;i++) {}
-    for(i=0;i<75;i++) {}
+    for(volatile uint32_t i=0;i<300;i++) {
+      for(volatile uint32_t j=0;j<26;j++) {}
+    }
+    ms--;
+  }
+}
+
+//result of measurement: ms=500, measured delay=480ms
+static void __attribute__((optimize("O0"))) Delay_4(volatile unsigned int ms)
+{
+  while(ms != 0) {
+    for(volatile uint32_t i=0;i<300;i++) {
+      for(volatile uint32_t j=0;j<25;j++) {}
+    }
     ms--;
   }
 }
@@ -353,19 +366,19 @@ static void __attribute__((optimize("O2"))) Delay_2(volatile unsigned int ms)
 void testDelays()
 {
   DEBUG_TIMER_START(debugTimer1);
-  Delay_s(3000);
+  Delay_1(500);
   DEBUG_TIMER_STOP(debugTimer1);
 
   DEBUG_TIMER_START(debugTimer2);
-  Delay_0(3000);
+  Delay_2(500);
   DEBUG_TIMER_STOP(debugTimer2);
 
   DEBUG_TIMER_START(debugTimer3);
-  Delay_2(3000);
+  Delay_3(500);
   DEBUG_TIMER_STOP(debugTimer3);
 
   DEBUG_TIMER_START(debugTimer4);
-  Delay_s(30);
+  Delay_4(500);
   DEBUG_TIMER_STOP(debugTimer4);
 }
 #endif //#if defined(DEBUG_TIMERS)
