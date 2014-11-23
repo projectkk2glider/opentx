@@ -306,10 +306,10 @@ static void LCD_Hardware_Init()
   GPIO_Init(GPIO_LCD_RST, &GPIO_InitStructure);
 }
 
-void LCD_OFF()
+void lcdOff()
 {
-  AspiCmd(0xE2);
-  Delay(20);	
+  AspiCmd(0xE2);    //system reset
+  Delay(3);	        //wait for caps to drain
 }
 
 void lcdInit()
@@ -329,14 +329,14 @@ void lcdInit()
 
   LCD_RST_HIGH();
   // Delay(2500);  //real life delay was 83ms
-  Delay(300);     // longer delay after reset
+  Delay(300);     // 150ms needed according to data-sheet, reserve for low temperature
  
-  AspiCmd(0xE2);
+  // AspiCmd(0xE2);      //system reset -redundant since it is triggered by the RST pin
   // Delay(2500);   //real life delay was 83ms
-  Delay(100);     // longer delay 
+  // Delay(100);     // longer delay 
   LCD_Init();
   // Delay(120);    //real life delay was 4ms
-  Delay(100);     // additional delay for test purposes
+  // Delay(100);     // additional delay for test purposes
 
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
 }

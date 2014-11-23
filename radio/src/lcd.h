@@ -266,6 +266,7 @@ void lcdSetRefVolt(unsigned char val);
 void lcdInit();
 void lcd_clear();
 void lcdSetContrast();
+void lcdOff();
 
 #if defined(PCBTARANIS) && defined(REVPLUS) && !defined(SIMU)
   void lcdRefresh(bool wait=true);

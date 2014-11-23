@@ -3535,6 +3535,7 @@ void menusTask(void * pdata)
 
   lcd_clear();
   lcdRefresh();
+  lcdOff();
   lcdSetRefVolt(0);
 
   SysTick->CTRL = 0; // turn off systick
@@ -3659,8 +3660,8 @@ int main(void)
   lcd_clear();
   displayPopup(STR_SHUTDOWN);
   opentxClose();
-  lcd_clear() ;
-  lcdRefresh() ;
+  lcd_clear();
+  lcdRefresh();
   pwrOff(); // Only turn power off if necessary
   wdt_disable();
   while(1); // never return from main() - there is no code to return back, if any delays occurs in physical power it does dead loop.
