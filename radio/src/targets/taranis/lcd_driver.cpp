@@ -329,7 +329,7 @@ void lcdInit()
   Delay(2);     // only 3us needed according to data-sheet
 
   LCD_RST_HIGH();
-  Delay(2000);     // 150ms needed according to data-sheet, reserve for low temperature
+  Delay(1000);     // 150ms needed according to data-sheet, reserve for low temperature
  
   LCD_Init();
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
