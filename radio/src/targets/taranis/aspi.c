@@ -113,7 +113,7 @@ void AspiData(u8 Para_data)
         else
           LCD_MOSI_LOW();
         Para_data <<= 1;
-        LCD_CLK_LOW();
+        __no_operation();
         LCD_CLK_HIGH();
         __no_operation();
     }

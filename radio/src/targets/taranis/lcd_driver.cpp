@@ -162,8 +162,7 @@ void Set_Address(u8 x, u8 y)
   else \
     LCD_MOSI_LOW(); \
   LCD_CLK_LOW(); \
-  LCD_CLK_LOW(); \
-  LCD_CLK_LOW(); \
+  __no_operation(); \
   LCD_CLK_HIGH();
 
 #if defined(REVPLUS)
@@ -391,11 +390,11 @@ void testDelays()
   lcdRefresh();
   lcdRefresh();
   
-  // lcdRefresh();
-  // lcdRefresh();
-  // lcdRefresh();
-  // lcdRefresh();
-  // lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
 
   DEBUG_TIMER_STOP(debugTimer1);
   __enable_irq();
