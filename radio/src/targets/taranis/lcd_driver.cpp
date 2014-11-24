@@ -322,25 +322,18 @@ void lcdInit()
   initLcdSpi() ;
 #endif
   
-  LCD_RST_HIGH();
-  Delay(20);
+  // LCD_RST_HIGH();
+  // Delay(20);
 
   LCD_RST_LOW();
-  // Delay(120); //11ms   //real life delay was 4ms
-  Delay(20);     // tuned delay
+  Delay(2);     // only 3us needed according to data-sheet
 
   LCD_RST_HIGH();
-  // Delay(2500);  //real life delay was 83ms
-  Delay(1500);     // 150ms needed according to data-sheet, reserve for low temperature
+  Delay(2000);     // 150ms needed according to data-sheet, reserve for low temperature
  
-  // AspiCmd(0xE2);      //system reset -redundant since it is triggered by the RST pin
-  // Delay(2500);   //real life delay was 83ms
-  // Delay(100);     // longer delay 
   LCD_Init();
-  // Delay(120);    //real life delay was 4ms
-  // Delay(100);     // additional delay for test purposes
-
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
+  Delay(20);      //neded for start of internal DC-DC converter
 }
 
 void lcdSetRefVolt(uint8_t val)

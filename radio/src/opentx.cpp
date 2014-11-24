@@ -3403,9 +3403,9 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 #if defined(PCBTARANIS)
   CoTickDelay(100);   //200ms
   lcdInit();
-  lcdSetRefVolt(g_eeGeneral.contrast);
+  // lcdSetRefVolt(g_eeGeneral.contrast);  //already set in lcdInit()
   BACKLIGHT_ON();
-  CoTickDelay(20);  //20ms
+  // CoTickDelay(20);  //20ms
   Splash();
 #endif
 
