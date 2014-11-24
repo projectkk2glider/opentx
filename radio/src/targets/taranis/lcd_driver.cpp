@@ -338,7 +338,7 @@ void lcdInit()
   // Delay(100);     // longer delay 
   LCD_Init();
   // Delay(120);    //real life delay was 4ms
-  Delay(200);     // additional delay for test purposes
+  Delay(100);     // additional delay for test purposes
 
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
   Delay(10);     // additional delay for test purposes
