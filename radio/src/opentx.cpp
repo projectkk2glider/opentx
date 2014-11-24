@@ -3402,6 +3402,7 @@ inline void opentxInit(OPENTX_INIT_ARGS)
 {
 #if defined(PCBTARANIS)
   CoTickDelay(100);   //200ms
+  init_trainer_capture();  //to start 2Mhz timer
   lcdInit();
   lcdSetRefVolt(g_eeGeneral.contrast);
   BACKLIGHT_ON();

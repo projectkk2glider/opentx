@@ -162,7 +162,8 @@ void Set_Address(u8 x, u8 y)
   else \
     LCD_MOSI_LOW(); \
   LCD_CLK_LOW(); \
-  __no_operation(); \
+  LCD_CLK_LOW(); \
+  LCD_CLK_LOW(); \
   LCD_CLK_HIGH();
 
 #if defined(REVPLUS)
@@ -197,6 +198,9 @@ void lcdRefresh(bool wait)
 #else
 void lcdRefresh()
 {  
+  DEBUG_TIMER_SAMPLE(debugTimer2);
+  DEBUG_TIMER_START(debugTimer1);
+
   for (uint32_t y=0; y<LCD_H; y++) {
     uint8_t *p = &displayBuf[y/2 * LCD_W];
 
@@ -222,6 +226,7 @@ void lcdRefresh()
 
     WriteData(0);
   }
+  DEBUG_TIMER_STOP(debugTimer1);
 }
 #endif
 
@@ -365,21 +370,21 @@ static void __attribute__((optimize("O0"))) Delay_4(volatile unsigned int ms)
 
 void testDelays()
 {
-  DEBUG_TIMER_START(debugTimer1);
-  Delay_1(500);
-  DEBUG_TIMER_STOP(debugTimer1);
+  // DEBUG_TIMER_START(debugTimer1);
+  // Delay_1(500);
+  // DEBUG_TIMER_STOP(debugTimer1);
 
-  DEBUG_TIMER_START(debugTimer2);
-  Delay_2(500);
-  DEBUG_TIMER_STOP(debugTimer2);
+  // DEBUG_TIMER_START(debugTimer2);
+  // Delay_2(500);
+  // DEBUG_TIMER_STOP(debugTimer2);
 
-  DEBUG_TIMER_START(debugTimer3);
-  Delay_3(500);
-  DEBUG_TIMER_STOP(debugTimer3);
+  // DEBUG_TIMER_START(debugTimer3);
+  // Delay_3(500);
+  // DEBUG_TIMER_STOP(debugTimer3);
 
-  DEBUG_TIMER_START(debugTimer4);
-  Delay_4(500);
-  DEBUG_TIMER_STOP(debugTimer4);
+  // DEBUG_TIMER_START(debugTimer4);
+  // Delay_4(500);
+  // DEBUG_TIMER_STOP(debugTimer4);
 }
 #endif //#if defined(DEBUG_TIMERS)
 

@@ -375,10 +375,10 @@ void menuDebugTimers(uint8_t event)
   {
     case EVT_KEY_FIRST(KEY_ENTER):
       //reset timers
-      // debugTimerAudioPeriod.reset();
-      // debugTimerAudioDuration.reset();
-      // debugTimerMixerPeriod.reset();
-      // debugTimerMixerDuration.reset();
+      debugTimer1.reset();
+      debugTimer2.reset();
+      debugTimer3.reset();
+      debugTimer4.reset();
       AUDIO_KEYPAD_UP();
       break;
 
