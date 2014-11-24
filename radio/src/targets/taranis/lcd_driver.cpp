@@ -198,9 +198,6 @@ void lcdRefresh(bool wait)
 #else
 void lcdRefresh()
 {  
-  DEBUG_TIMER_SAMPLE(debugTimer2);
-  DEBUG_TIMER_START(debugTimer1);
-
   for (uint32_t y=0; y<LCD_H; y++) {
     uint8_t *p = &displayBuf[y/2 * LCD_W];
 
@@ -226,7 +223,6 @@ void lcdRefresh()
 
     WriteData(0);
   }
-  DEBUG_TIMER_STOP(debugTimer1);
 }
 #endif
 
@@ -385,15 +381,31 @@ void testDelays()
   // DEBUG_TIMER_START(debugTimer4);
   // Delay_4(500);
   // DEBUG_TIMER_STOP(debugTimer4);
+  Delay(100);
+  __disable_irq();
+  DEBUG_TIMER_START(debugTimer1);
+  
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  lcdRefresh();
+  
+  // lcdRefresh();
+  // lcdRefresh();
+  // lcdRefresh();
+  // lcdRefresh();
+  // lcdRefresh();
+
+  DEBUG_TIMER_STOP(debugTimer1);
+  __enable_irq();
+
 }
 #endif //#if defined(DEBUG_TIMERS)
 
 
 void lcdInit()
 {
-#if defined(DEBUG_TIMERS)
-  testDelays();
-#endif  
   LCD_BL_Config();
   LCD_Hardware_Init();
 #if defined(REVPLUS)
@@ -401,9 +413,9 @@ void lcdInit()
 #endif
   Delay(100);     // additional delay for test purposes
   
-  LCD_RST_HIGH();
-  Delay(5);
-  Delay(100);     // additional delay for test purposes
+  // LCD_RST_HIGH();
+  // Delay(5);
+  // Delay(100);     // additional delay for test purposes
 
   LCD_RST_LOW();
   Delay(120); //11ms
@@ -419,6 +431,9 @@ void lcdInit()
   Delay(100);     // additional delay for test purposes
 
   AspiCmd(0xAF);	//dc2=1, IC into exit SLEEP MODE, dc3=1 gray=ON, dc4=1 Green Enhanc mode disabled
+#if defined(DEBUG_TIMERS)
+  testDelays();
+#endif  
 }
 
 void lcdSetRefVolt(uint8_t val)
