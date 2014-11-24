@@ -331,7 +331,7 @@ void lcdInit()
 
   LCD_RST_HIGH();
   // Delay(2500);  //real life delay was 83ms
-  Delay(2500);     // 150ms needed according to data-sheet, reserve for low temperature
+  Delay(1000);     // 150ms needed according to data-sheet, reserve for low temperature
  
   // AspiCmd(0xE2);      //system reset -redundant since it is triggered by the RST pin
   // Delay(2500);   //real life delay was 83ms
