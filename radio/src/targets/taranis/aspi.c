@@ -54,7 +54,7 @@ void AspiCmd(u8 Command_Byte)
     LCD_A0_LOW();
 
     LCD_CLK_HIGH();
-    __no_operation();
+    LCD_CLK_HIGH();
     LCD_NCS_LOW();  
  
     while (i--) {
@@ -66,9 +66,11 @@ void AspiCmd(u8 Command_Byte)
         LCD_MOSI_LOW();
 
       Command_Byte <<= 1;
+      LCD_CLK_LOW(); \
+      LCD_CLK_LOW(); \
 
       LCD_CLK_HIGH();
-      __no_operation();
+      LCD_CLK_HIGH();
     }
 
     LCD_NCS_HIGH();  
@@ -113,9 +115,11 @@ void AspiData(u8 Para_data)
         else
           LCD_MOSI_LOW();
         Para_data <<= 1;
-        __no_operation();
+        LCD_CLK_LOW();
+        LCD_CLK_LOW();
+
         LCD_CLK_HIGH();
-        __no_operation();
+        LCD_CLK_HIGH();
     }
     LCD_NCS_HIGH();
     LCD_A0_HIGH();  

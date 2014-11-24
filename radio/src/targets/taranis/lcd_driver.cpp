@@ -165,7 +165,9 @@ void Set_Address(u8 x, u8 y)
   else \
     LCD_MOSI_LOW(); \
   LCD_CLK_LOW(); \
-  __no_operation(); \
+  LCD_CLK_LOW(); \
+  LCD_CLK_LOW(); \
+  LCD_CLK_HIGH(); \
   LCD_CLK_HIGH();
 
 #if defined(REVPLUS)
@@ -329,7 +331,7 @@ void lcdInit()
 
   LCD_RST_HIGH();
   // Delay(2500);  //real life delay was 83ms
-  Delay(300);     // 150ms needed according to data-sheet, reserve for low temperature
+  Delay(2500);     // 150ms needed according to data-sheet, reserve for low temperature
  
   // AspiCmd(0xE2);      //system reset -redundant since it is triggered by the RST pin
   // Delay(2500);   //real life delay was 83ms
