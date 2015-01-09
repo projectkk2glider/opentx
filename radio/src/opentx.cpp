@@ -37,6 +37,7 @@
 #include "opentx.h"
 
 #if defined(CPUARM)
+  extern volatile uint32_t Tenms;
 #define MENUS_STACK_SIZE    2000
 #define MIXER_STACK_SIZE    500
 #define AUDIO_STACK_SIZE    500
@@ -925,45 +926,6 @@ getvalue_t convert8bitsTelemValue(uint8_t channel, ls_telemetry_value_t value)
   return result;
 }
 
-#if defined(FRSKY) || defined(CPUARM)
-FORCEINLINE void convertUnit(getvalue_t & val, uint8_t & unit)
-{
-  if (IS_IMPERIAL_ENABLE()) {
-    if (unit == UNIT_TEMPERATURE) {
-      val += 18;
-      val *= 115;
-      val >>= 6;
-    }
-    if (unit == UNIT_DIST) {
-      // m to ft *105/32
-      val = val * 3 + (val >> 2) + (val >> 5);
-    }
-    if (unit == UNIT_FEET) {
-      unit = UNIT_DIST;
-    }
-    if (unit == UNIT_KTS) {
-      // kts to mph
-      unit = UNIT_SPEED;
-      val = (val * 23) / 20;
-    }
-  }
-  else {
-    if (unit == UNIT_KTS) {
-      // kts to km/h
-      unit = UNIT_SPEED;
-#if defined(CPUARM)
-      val = (val * 1852) / 1000;
-#else
-      val = (val * 50) / 27;
-#endif
-    }
-  }
-
-  if (unit == UNIT_HDG) {
-    unit = UNIT_TEMPERATURE;
-  }
-}
-#endif
 
 #define INAC_STICKS_SHIFT   6
 #define INAC_SWITCHES_SHIFT 8
@@ -1689,25 +1651,6 @@ uint16_t s_cnt_samples_thr_10s;
 uint16_t s_sum_samples_thr_10s;
 #endif
 
-FORCEINLINE void evalTrims()
-{
-  uint8_t phase = mixerCurrentFlightMode;
-  for (uint8_t i=0; i<NUM_STICKS; i++) {
-    // do trim -> throttle trim if applicable
-    int16_t trim = getTrimValue(phase, i);
-#if !defined(PCBTARANIS)
-    if (i==THR_STICK && g_model.thrTrim) {
-      int16_t trimMin = g_model.extendedTrims ? TRIM_EXTENDED_MIN : TRIM_MIN;
-      trim = (((g_model.throttleReversed)?(int32_t)(trim+trimMin):(int32_t)(trim-trimMin)) * (RESX-anas[i])) >> (RESX_SHIFT+1);
-    }
-#endif
-    if (trimsCheckTimer > 0) {
-      trim = 0;
-    }
-
-    trims[i] = trim*2;
-  }
-}
 
 #if defined(DEBUG)
 /*

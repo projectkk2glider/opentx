@@ -733,7 +733,8 @@ ifeq ($(PCB), TARANIS)
   EXTRAINCDIRS += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_OTG_Driver/inc targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_Device_Library/Core/inc 
   EXTRAINCDIRS += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_Device_Library/Class/msc/inc targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_Device_Library/Class/hid/inc 
   BOARDSRC = targets/taranis/board_taranis.cpp
-  EXTRABOARDSRC += targets/taranis/configure_pins.cpp targets/taranis/lcd_driver.cpp targets/taranis/flash_driver.cpp targets/taranis/aspi.c targets/taranis/i2c.c targets/taranis/delays.c 
+  EXTRABOARDSRC += targets/taranis/configure_pins.cpp targets/taranis/lcd_driver.cpp targets/taranis/flash_driver.cpp  
+	EXTRABOARDCSRC += targets/taranis/aspi.c targets/taranis/i2c.c targets/taranis/delays.c
   SRC += CoOS/kernel/core.c CoOS/kernel/hook.c CoOS/kernel/task.c CoOS/kernel/event.c CoOS/kernel/time.c CoOS/kernel/timer.c CoOS/kernel/flag.c CoOS/kernel/mutex.c CoOS/kernel/serviceReq.c CoOS/portable/GCC/port.c CoOS/portable/arch.c
   SRC += targets/taranis/pwr_driver.c targets/taranis/usb_driver.c
   EEPROMSRC = eeprom_common.cpp eeprom_rlc.cpp eeprom_conversions.cpp
@@ -752,7 +753,7 @@ ifeq ($(PCB), TARANIS)
   SRC += targets/taranis/STM32F2xx_StdPeriph_Lib_V1.1.0/Libraries/STM32F2xx_StdPeriph_Driver/src/stm32f2xx_rtc.c
   SRC += targets/taranis/STM32F2xx_StdPeriph_Lib_V1.1.0/Libraries/STM32F2xx_StdPeriph_Driver/src/stm32f2xx_pwr.c
   SRC += targets/taranis/STM32F2xx_StdPeriph_Lib_V1.1.0/Libraries/STM32F2xx_StdPeriph_Driver/src/stm32f2xx_usart.c
-  SRC += targets/taranis/STM32F2xx_StdPeriph_Lib_V1.1.0/Libraries/CMSIS/Device/ST/STM32F2xx/Source/Templates/gcc_ride7/startup_stm32f2xx.s
+  ASRC += targets/taranis/STM32F2xx_StdPeriph_Lib_V1.1.0/Libraries/CMSIS/Device/ST/STM32F2xx/Source/Templates/gcc_ride7/startup_stm32f2xx.s
   SRC += targets/taranis/usb_bsp.c targets/taranis/usbd_desc.c
   SRC += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_OTG_Driver/src/usb_core.c
   SRC += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_OTG_Driver/src/usb_dcd.c
@@ -761,7 +762,7 @@ ifeq ($(PCB), TARANIS)
   SRC += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_Device_Library/Core/src/usbd_ioreq.c
   SRC += targets/taranis/STM32_USB-Host-Device_Lib_V2.1.0/Libraries/STM32_USB_Device_Library/Core/src/usbd_req.c
   EXTRABOARDSRC += targets/taranis/usbd_usr.cpp
-  SRC += targets/sky9x/syscalls.c
+  SRC += targets/taranis/syscalls.c
   ifeq ($(USB), JOYSTICK)
     CPPDEFS += -DUSB_JOYSTICK
     SRC += targets/taranis/usbd_hid_joystick.c
@@ -792,7 +793,8 @@ ifeq ($(PCB), TARANIS)
     LUADEP = lua_exports.cpp
   endif           
   ifeq ($(SDCARD), YES)
-    EXTRABOARDSRC += FatFs/ff.c FatFs/fattime.c FatFs/option/ccsbcs.c targets/taranis/diskio.cpp
+    EXTRABOARDCSRC += FatFs/ff.c FatFs/fattime.c FatFs/option/ccsbcs.c 
+    EXTRABOARDSRC += targets/taranis/diskio.cpp
     CPPDEFS += -DVOICE
     INCDIRS += FatFs FatFs/option
   endif
@@ -1202,6 +1204,9 @@ endif
 MAJ_VER = ${shell sh -c "grep \"MAJ_VERS\" opentx.h | cut -d\  -f3 | egrep -o \"[[:digit:]]\""}
 MIN_VER = ${shell sh -c "grep \"MIN_VERS\" opentx.h | cut -d\  -f3"}
 
+OBJDIR = ../obj
+
+
 # Default target.
 all: begin gccversion sizebefore build sizeafter end
 
@@ -1209,7 +1214,7 @@ all: begin gccversion sizebefore build sizeafter end
 ifeq ($(ARCH), AVR)
   build: stamp_header tra lbm allsrc.cpp elf remallsrc hex
 else ifeq ($(PCB), $(filter $(PCB), SKY9X 9XRPRO TARANIS))
-  build: stamp_header tra lbm bootloader.lbm $(LUADEP) allsrc.cpp elf remallsrc bin
+  build: stamp_header tra lbm bootloader.lbm $(LUADEP) elf remallsrc bin
 else
   build: stamp_header tra lbm allsrc.cpp elf remallsrc bin
 endif
@@ -1385,6 +1390,35 @@ simu: $(LUADEP) stamp_header $(BOARDSRC) $(CPPSRC) Makefile simu.cpp targets/sim
 eeprom.bin:
 	dd if=/dev/zero of=$@ bs=1 count=2048
 
+OBJDIR = ../foo
+
+ALLSRC = $(BOARDSRC) $(CPPSRC) $(EXTRABOARDSRC)
+ALLCSRC = $(SRC) $(EXTRABOARDCSRC)
+# Generate the (raw) object files lists
+AXOBJS    = $(ASRC:%.s=%.o)
+CXOBJS    = $(ALLCSRC:%.c=%.o)
+CPPXOBJS  = $(ALLSRC:%.cpp=%.o)
+
+# Remove directory info from the object files lists
+AOBJS    = $(patsubst %,$(OBJDIR)/%,$(notdir $(AXOBJS) ))
+COBJS    = $(patsubst %,$(OBJDIR)/%,$(notdir $(CXOBJS) ))
+CPPOBJS  = $(patsubst %,$(OBJDIR)/%,$(notdir $(CPPXOBJS) ))
+DIRS = $(sort $(dir $(AXOBJS) $(CXOBJS) $(CPPXOBJS) ) )
+
+# Search path for sources
+VPATH = $(DIRS)
+
+# Generates the dependancy files lists
+INCLUDES = $(AOBJS:.o=.o.d) $(COBJS:.o=.o.d) $(CPPOBJS:.o=.o.d)
+
+OBJS    = $(ASRC:%.s=$(OBJDIR)/%.o) $(SRC:%.c=$(OBJDIR)/%.o) $(CPPSRC:%.cpp=$(OBJDIR)/%.o)
+LIBS    = $(DLIBS) $(ULIBS)
+
+
+# Generate dependency information
+CPFLAGS += -MD -MP -MF $(OBJDIR)/$(@F).d
+CPPFLAGS += -MD -MP -MF $(OBJDIR)/$(@F).d
+
 
 # Create final output files (.hex, .eep) from ELF output file.
 ifeq ($(ARCH), AVR)
@@ -1436,17 +1470,37 @@ ifeq ($(ARCH), AVR)
 	@echo $(MSG_COMPILING) $@
 	$(CC) $(AVRCPPFLAGS) $< --output $@ $(LDFLAGS)
 else
-%.o: %.c
+$(CPPOBJS) : $(OBJDIR)/%.o : %.cpp
+	$(CC) $(ARMCPPFLAGS) -fno-exceptions -I . $(INCDIR) $< -o $@
+
+#$(OBJDIR)/%.o : %.c
+#	$(CC) -c $(CPFLAGS) -I . $(INCDIR) $< -o $@
+$(COBJS) : $(OBJDIR)/%.o : %.c
 	$(CC) $(ARMCPPFLAGS) -Wimplicit $< -o $@
-%.o: %.s
-	$(AS) $< -o $@
-TMP = $(SRC:.c=.o)
-OBJS =  $(TMP:.s=.o)
-%.elf: allsrc.cpp $(OBJS)
-	@echo
-	@echo $(MSG_COMPILING) $@
-	$(CC) $(ARMCPPFLAGS) $< -o allsrc.o
-	$(CC) $(OBJS) allsrc.o -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch,--gc-sections $(NEWLIB_NANO_FLAGS) -o $@
+
+#$(OBJDIR)/%.o : %.s
+#	$(AS) -c $(ASFLAGS) $< -o $@
+$(AOBJS) : $(OBJDIR)/%.o : %.s
+	$(AS) $(ASFLAGS) $< -o $@
+
+#%elf: $(OBJS)
+#	$(CC) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+%elf: $(AOBJS) $(COBJS) $(CPPOBJS) 
+	$(CC) $(AOBJS) $(COBJS) $(CPPOBJS) -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch,--gc-sections $(NEWLIB_NANO_FLAGS) -o $@
+
+
+# %.o: %.c
+# 	$(CC) $(ARMCPPFLAGS) -Wimplicit $< -o $@
+# %.o: %.s
+# 	$(AS) $< -o $@
+# 	$(BOARDSRC) $(CPPSRC) $(EXTRABOARDSRC)
+# TMP = $(SRC:.c=.o)
+# OBJS =  $(TMP:.s=.o)
+# %.elf: allsrc.cpp $(OBJS)
+# 	@echo
+# 	@echo $(MSG_COMPILING) $@
+# 	$(CC) $(ARMCPPFLAGS) $< -o allsrc.o
+# 	$(CC) $(OBJS) allsrc.o -mcpu=cortex-m3 -mthumb -nostartfiles -lm -T$(LDSCRIPT) -Wl,-Map=$(TARGET).map,--cref,--no-warn-mismatch,--gc-sections $(NEWLIB_NANO_FLAGS) -o $@
 endif
 
 # Target: clean project.
@@ -1561,3 +1615,13 @@ GTEST_TESTS_SRCS = $(shell find tests/ -type f -name '*.cpp')
 gtests: $(BOARDSRC) $(CPPSRC) $(GTEST_TESTS_SRCS) targets/simu/simpgmspace.cpp *.h gtest_main.a
 	g++ -std=gnu++0x $(CPPFLAGS) $(BOARDSRC) $(CPPSRC) $(LUASRC) $(GTEST_TESTS_SRCS) targets/simu/simpgmspace.cpp -I$(GTEST_DIR) ${INCFLAGS} -I$(GTEST_DIR)/include -o gtests -lpthread -MD -DSIMU -lQtCore -lQtGui gtest_main.a -fexceptions 
 
+
+
+# 
+# Include the dependency files, should be the last of the makefile
+#
+#-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+# Add in all the dependancy files
+-include $(INCLUDES)
+
+# *** EOF ***

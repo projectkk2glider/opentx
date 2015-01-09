@@ -338,6 +338,7 @@ void pushPrompt(uint16_t prompt, uint8_t id=0);
 #define AUDIO_FLUSH()            audioQueue.flush()
 
 #if defined(SDCARD)
+#include "opentx.h"
   extern tmr10ms_t timeAutomaticPromptsSilence;
   void playModelEvent(uint8_t category, uint8_t index, uint8_t event=0);
   #define PLAY_PHASE_OFF(phase)         playModelEvent(PHASE_AUDIO_CATEGORY, phase, AUDIO_EVENT_OFF)

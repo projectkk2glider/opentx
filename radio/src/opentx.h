@@ -1207,7 +1207,25 @@ void applyDefaultTemplate();
 
 void incSubtrim(uint8_t idx, int16_t inc);
 void instantTrim();
-FORCEINLINE void evalTrims();
+FORCEINLINE void evalTrims()
+{
+  uint8_t phase = mixerCurrentFlightMode;
+  for (uint8_t i=0; i<NUM_STICKS; i++) {
+    // do trim -> throttle trim if applicable
+    int16_t trim = getTrimValue(phase, i);
+#if !defined(PCBTARANIS)
+    if (i==THR_STICK && g_model.thrTrim) {
+      int16_t trimMin = g_model.extendedTrims ? TRIM_EXTENDED_MIN : TRIM_MIN;
+      trim = (((g_model.throttleReversed)?(int32_t)(trim+trimMin):(int32_t)(trim-trimMin)) * (RESX-anas[i])) >> (RESX_SHIFT+1);
+    }
+#endif
+    if (trimsCheckTimer > 0) {
+      trim = 0;
+    }
+
+    trims[i] = trim*2;
+  }
+}
 void copyTrimsToOffset(uint8_t ch);
 void copySticksToOffset(uint8_t ch);
 void moveTrimsToOffsets();
@@ -1594,8 +1612,52 @@ extern union ReusableBuffer reusableBuffer;
 
 void checkFlashOnBeep();
 
+#if defined(CPUARM)
+  #define IS_IMPERIAL_ENABLE() (g_eeGeneral.imperial)
+#elif defined(IMPERIAL_UNITS)
+  #define IS_IMPERIAL_ENABLE() (1)
+#else
+  #define IS_IMPERIAL_ENABLE() (0)
+#endif
+
 #if defined(FRSKY) || defined(CPUARM)
-void convertUnit(getvalue_t & val, uint8_t & unit); // TODO check FORCEINLINE on stock
+FORCEINLINE  void convertUnit(getvalue_t & val, uint8_t & unit)
+{
+  if (IS_IMPERIAL_ENABLE()) {
+    if (unit == UNIT_TEMPERATURE) {
+      val += 18;
+      val *= 115;
+      val >>= 6;
+    }
+    if (unit == UNIT_DIST) {
+      // m to ft *105/32
+      val = val * 3 + (val >> 2) + (val >> 5);
+    }
+    if (unit == UNIT_FEET) {
+      unit = UNIT_DIST;
+    }
+    if (unit == UNIT_KTS) {
+      // kts to mph
+      unit = UNIT_SPEED;
+      val = (val * 23) / 20;
+    }
+  }
+  else {
+    if (unit == UNIT_KTS) {
+      // kts to km/h
+      unit = UNIT_SPEED;
+#if defined(CPUARM)
+      val = (val * 1852) / 1000;
+#else
+      val = (val * 50) / 27;
+#endif
+    }
+  }
+
+  if (unit == UNIT_HDG) {
+    unit = UNIT_TEMPERATURE;
+  }
+}
 void putsTelemetryValue(xcoord_t x, uint8_t y, lcdint_t val, uint8_t unit, LcdFlags att);
 #else
 #define convertUnit(...)
@@ -1734,13 +1796,6 @@ void varioWakeup();
   #define IS_SOUND_OFF() (g_eeGeneral.beepMode == e_mode_quiet)
 #endif
 
-#if defined(CPUARM)
-  #define IS_IMPERIAL_ENABLE() (g_eeGeneral.imperial)
-#elif defined(IMPERIAL_UNITS)
-  #define IS_IMPERIAL_ENABLE() (1)
-#else
-  #define IS_IMPERIAL_ENABLE() (0)
-#endif
 
 #if defined(PCBTARANIS)
   #define IS_USR_PROTO_FRSKY_HUB()   (1)
@@ -1763,5 +1818,17 @@ void varioWakeup();
 #if defined(USB_MASS_STORAGE)
   extern void usbPluggedIn();
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int main(void);
+
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif
