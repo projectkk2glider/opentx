@@ -66,7 +66,6 @@ void handleUsbConnection()
 
   if (!usbStarted && usbPlugged()) {
     usbStarted = true;
-    usbInit();
 #if defined(USB_MASS_STORAGE)
     opentxClose();
     usbPluggedIn();
@@ -74,7 +73,6 @@ void handleUsbConnection()
   }
   if (usbStarted && !usbPlugged()) {
     usbStarted = false;
-    usbDeInit();
   }
   
 #if defined(USB_JOYSTICK)

@@ -141,7 +141,7 @@ void boardInit()
   init5msTimer();
   __enable_irq();
   i2cInit();
-  // usbInit();
+  usbInit();
   
 #if defined(HAPTIC)  
   hapticInit();
