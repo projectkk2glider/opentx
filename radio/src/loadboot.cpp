@@ -104,8 +104,16 @@ void _bootStart()
   GPIOD->BSRRL = 1;                                  // set PWR_GPIO_PIN_ON pin to 1
   GPIOD->MODER = (GPIOD->MODER & 0xFFFFFFFC) | 1;    // General purpose output mode
 
+  // TRIMS_GPIO_PIN_LHR is on PG0 on 9XE and on PE3 on Taranis
+  // TRIMS_GPIO_PIN_RHL is on PC1 on all versions
+
+  // turn on pull-ups on trim keys 
   GPIOC->PUPDR = 0x00000004;
+#if defined(REV9E)
+  GPIOG->PUPDR = 0x00000001;
+#else
   GPIOE->PUPDR = 0x00000040;
+#endif
   
   for (uint32_t i = 0; i < 50000; i += 1) {
     bwdt_reset();
