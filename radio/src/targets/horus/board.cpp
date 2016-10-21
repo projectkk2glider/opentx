@@ -101,8 +101,10 @@ void interrupt1ms()
 extern "C" void INTERRUPT_1MS_IRQHandler()
 {
   INTERRUPT_1MS_TIMER->SR &= ~TIM_SR_UIF;
+  C_DEBUG_TIMER_START(DT_1MS);
   interrupt1ms();
   DEBUG_INTERRUPT(INT_1MS);
+  C_DEBUG_TIMER_STOP(DT_1MS);
 }
 
 void boardInit()

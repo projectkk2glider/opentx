@@ -126,6 +126,7 @@ extern "C" void TRAINER_DMA_IRQHandler()
 extern "C" void TRAINER_TIMER_IRQHandler()
 {
   DEBUG_INTERRUPT(INT_TRAINER);
+  C_DEBUG_TIMER_START(DT_TRAINER);
 
   uint16_t capture = 0;
   bool doCapture = false;
@@ -151,4 +152,5 @@ extern "C" void TRAINER_TIMER_IRQHandler()
     setupPulsesPPMTrainer();
     trainerSendNextFrame();
   }
+  C_DEBUG_TIMER_STOP(DT_TRAINER);
 }

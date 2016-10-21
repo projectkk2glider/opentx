@@ -145,6 +145,7 @@ void sportSendBuffer(uint8_t * buffer, uint32_t count)
 extern "C" void TELEMETRY_DMA_TX_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_TELEM_DMA);
+  C_DEBUG_TIMER_START(DT_TELEM_DMA);
   if (DMA_GetITStatus(TELEMETRY_DMA_Stream_TX, TELEMETRY_DMA_TX_FLAG_TC)) {
     DMA_ClearITPendingBit(TELEMETRY_DMA_Stream_TX, TELEMETRY_DMA_TX_FLAG_TC);
     TELEMETRY_USART->CR1 |= USART_CR1_TCIE;
@@ -153,12 +154,14 @@ extern "C" void TELEMETRY_DMA_TX_IRQHandler(void)
       outputTelemetryBufferTrigger = 0x7E;
     }
   }
+  C_DEBUG_TIMER_STOP(DT_TELEM_DMA);
 }
 
 #define USART_FLAG_ERRORS (USART_FLAG_ORE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_PE)
 extern "C" void TELEMETRY_USART_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_TELEM_USART);
+  C_DEBUG_TIMER_START(DT_TELEM_USART);
   uint32_t status = TELEMETRY_USART->SR;
   
   if ((status & USART_SR_TC) && (TELEMETRY_USART->CR1 & USART_CR1_TCIE)) {
@@ -169,6 +172,7 @@ extern "C" void TELEMETRY_USART_IRQHandler(void)
       status = TELEMETRY_USART->SR;
     }
   }
+  C_DEBUG_TIMER_STOP(DT_TELEM_USART);
 }
 
 // TODO we should have telemetry in an higher layer, functions above should move to a sport_driver.cpp

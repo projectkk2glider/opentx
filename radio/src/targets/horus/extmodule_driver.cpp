@@ -291,19 +291,25 @@ void extmoduleSendNextFrame()
 
 extern "C" void EXTMODULE_DMA_IRQHandler()
 {
-  if (!DMA_GetITStatus(EXTMODULE_DMA_STREAM, EXTMODULE_DMA_FLAG_TC))
+  C_DEBUG_TIMER_START(DT_EXT_DMA);
+  if (!DMA_GetITStatus(EXTMODULE_DMA_STREAM, EXTMODULE_DMA_FLAG_TC)) {
+    C_DEBUG_TIMER_STOP(DT_EXT_DMA);
     return;
+  }
 
   DMA_ClearITPendingBit(EXTMODULE_DMA_STREAM, EXTMODULE_DMA_FLAG_TC);
 
   EXTMODULE_TIMER->SR &= ~TIM_SR_CC2IF; // Clear flag
   EXTMODULE_TIMER->DIER |= TIM_DIER_CC2IE; // Enable this interrupt
+  C_DEBUG_TIMER_STOP(DT_EXT_DMA);
 }
 
 extern "C" void EXTMODULE_TIMER_IRQHandler()
 {
+  C_DEBUG_TIMER_START(DT_EXT_TIMER);
   EXTMODULE_TIMER->DIER &= ~TIM_DIER_CC2IE; // Stop this interrupt
   EXTMODULE_TIMER->SR &= ~TIM_SR_CC2IF;
   setupPulses(EXTERNAL_MODULE);
   extmoduleSendNextFrame();
+  C_DEBUG_TIMER_STOP(DT_EXT_TIMER);
 }

@@ -211,10 +211,12 @@ void intmodulePxxStart()
 extern "C" void INTMODULE_DMA_STREAM_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_DMA2S7);
+  C_DEBUG_TIMER_START(DT_DMA_INTMODULE);
   if (DMA_GetITStatus(INTMODULE_DMA_STREAM, INTMODULE_DMA_FLAG_TC)) {
     // TODO we could send the 8 next channels here (when needed)
     DMA_ClearITPendingBit(INTMODULE_DMA_STREAM, INTMODULE_DMA_FLAG_TC);
   }
+  C_DEBUG_TIMER_START(DT_DMA_INTMODULE);
 }
 
 void intmoduleSendNextFrame()
@@ -248,11 +250,11 @@ extern "C" void INTMODULE_TIMER_IRQHandler()
 {
   DEBUG_INTERRUPT(INT_TIM1CC);
   DEBUG_TIMER_SAMPLE(debugTimerIntPulses);
-  DEBUG_TIMER_START(debugTimerIntPulsesDuration);
+  C_DEBUG_TIMER_START(DT_TIM_INTMODULE);
 
   INTMODULE_TIMER->SR &= ~TIM_SR_CC2IF;           // clear flag
   setupPulses(INTERNAL_MODULE);
   intmoduleSendNextFrame();
-  
-  DEBUG_TIMER_STOP(debugTimerIntPulsesDuration);
+
+  C_DEBUG_TIMER_STOP(DT_TIM_INTMODULE);
 }

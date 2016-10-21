@@ -2755,13 +2755,17 @@ OPTIMIZE("O0") static SD_Error FindSCR(uint16_t rca, uint32_t *pscr)
 void SDIO_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_SDIO);
+  C_DEBUG_TIMER_START(DT_SDIO);
   SD_ProcessIRQ();
+  C_DEBUG_TIMER_STOP(DT_SDIO);
 }
 
 void SD_SDIO_DMA_IRQHANDLER(void)
 {
   DEBUG_INTERRUPT(INT_SDIO_DMA);
+  C_DEBUG_TIMER_START(DT_SDIO_DMA);
   SD_ProcessDMAIRQ();
+  C_DEBUG_TIMER_STOP(DT_SDIO_DMA);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

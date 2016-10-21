@@ -48,7 +48,9 @@ USB_OTG_CORE_HANDLE USB_OTG_dev;
 void OTG_FS_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_OTG_FS);
+  C_DEBUG_TIMER_START(DT_USB);
   USBD_OTG_ISR_Handler(&USB_OTG_dev);
+  C_DEBUG_TIMER_STOP(DT_USB);
 }
 
 void usbInit(void)

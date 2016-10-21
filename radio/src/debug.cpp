@@ -197,37 +197,36 @@ void DebugTimer::stop()
 DebugTimer debugTimers[DEBUG_TIMERS_COUNT];
 
 const char * debugTimerNames[DEBUG_TIMERS_COUNT] = {
-   "Pulses int."   // debugTimerIntPulses,
-  ,"Pulses dur."   // debugTimerIntPulsesDuration,
-  ,"10ms dur.  "   // debugTimerPer10ms,
-  ,"Rotary enc."   // debugTimerRotEnc,
-  ,"Haptic     "   // debugTimerHaptic,
-  ,"Mixer calc "   // debugTimerMixer,
-  ,"Tel. wakeup"   // debugTimerTelemetryWakeup,
-  ,"perMain dur"   // debugTimerPerMain,
-  ," perMain s1"   // debugTimerPerMain1,
-  ," guiMain   "   // debugTimerGuiMain,
-  ,"  LUA bg   "   // debugTimerLuaBg,
-  ,"  LCD wait "   // debugTimerLcdRefreshWait,
-  ,"  LUA fg   "   // debugTimerLuaFg,
-  ,"  LCD refr."   // debugTimerLcdRefresh,
-  ,"  Menus    "   // debugTimerMenus,
-  ,"   Menu hnd"   // debugTimerMenuHandlers,
-  ,"Menu Vers. "   // debugTimerVersion,
-  ,"Menu simple"   // debugTimerSimpleMenu,
-  ,"Menu drawte"   // debugTimerDrawText,
-  ,"Menu drawt1"   // debugTimerDrawText1,
-  ,"Mix ADC    "   // debugTimerGetAdc,
-  ,"Mix getsw  "   // debugTimerGetSwitches,
-  ,"Mix eval   "   // debugTimerEvalMixes,
-  ,"Mix 10ms   "   // debugTimerMixes10ms,
-  ,"ADC read   "   // debugTimerAdcRead,
-  ,"mix-pulses "   // debugTimerMixerCalcToUsage
-  ,"mix-int.   "   // debugTimerMixerIterval
-  ,"Audio int. "   // debugTimerAudioIterval
-  ,"Audio dur. "   // debugTimerAudioDuration
-  ," A. consume"   // debugTimerAudioConsume,
+   "systick  "   //   DT_INT_TICK,
+  ,"1ms      "   // DT_1MS,
+  ,"usb      "
+  ,"intmoddma"   //DT_DMA_INTMODULE
+  ,"intmodtim"  // DT_TIM_INTMODULE
+  ,"sdio     "    // DT_SDIO,
+  ,"sdio dma "  // DT_SDIO_DMA,
+  ,"tel dma  "  //DT_TELEM_DMA
+  ,"tel usart"  // DT_TELEM_USART
+  ,"serial2  "   //DT_SER2
+  ,"trainer  "   // DT_TRAINER
+  ,"extmoddma"   // DT_EXT_DMA
+  ,"extmodtim"   // DT_EXT_TIMER
+  ,"gps      "   // DT_GPS
 
 };
+
+void dt_start(uint8_t timer)
+{
+  debugTimers[timer].start();
+}
+
+void dt_stop(uint8_t timer)
+{
+  debugTimers[timer].stop();
+}
+
+void dt_sample(uint8_t timer)
+{
+  debugTimers[timer].sample();
+}
 
 #endif

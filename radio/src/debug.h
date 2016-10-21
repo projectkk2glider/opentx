@@ -269,6 +269,46 @@ extern void CoTaskSwitchHook(uint8_t taskID);
 
 #if defined(DEBUG_TIMERS)
 
+
+  #if defined(__cplusplus)
+  extern "C" {
+  #endif
+
+enum DebugTimers {
+  DT_INT_TICK,
+  DT_1MS,
+  DT_USB,
+  DT_DMA_INTMODULE,
+  DT_TIM_INTMODULE,
+  DT_SDIO,
+  DT_SDIO_DMA,
+  DT_TELEM_DMA,
+  DT_TELEM_USART,
+  DT_SER2,
+  DT_TRAINER,
+  DT_EXT_DMA,
+  DT_EXT_TIMER,
+  DT_GPS,
+
+  DEBUG_TIMERS_COUNT
+};
+
+    void dt_start(uint8_t timer);
+    void dt_stop(uint8_t timer);
+    void dt_sample(uint8_t timer);
+
+    #define C_DEBUG_TIMER_START(timer)  dt_start(timer);
+    #define C_DEBUG_TIMER_STOP(timer)   dt_stop(timer);
+    #define C_DEBUG_TIMER_SAMPLE(timer) dt_sample(timer)
+    #define DEBUG_TIMER_START(timer)  
+    #define DEBUG_TIMER_STOP(timer)  
+    #define DEBUG_TIMER_SAMPLE(timer) 
+
+  #if defined(__cplusplus)
+  }
+  #endif
+
+
 #if defined(__cplusplus)
 typedef uint32_t debug_timer_t;
 
@@ -303,54 +343,11 @@ public:
   debug_timer_t getLast() const { return last; }
 };
 
-enum DebugTimers {
-  debugTimerIntPulses,
-  debugTimerIntPulsesDuration,
-  debugTimerPer10ms,
-  debugTimerRotEnc,
-  debugTimerHaptic,
-  debugTimerMixer,
-  debugTimerTelemetryWakeup,
-  debugTimerPerMain,
-  debugTimerPerMain1,
-  debugTimerGuiMain,
-  debugTimerLuaBg,
-  debugTimerLcdRefreshWait,
-  debugTimerLuaFg,
-  debugTimerLcdRefresh,
-  debugTimerMenus,
-  debugTimerMenuHandlers,
-  debugTimerVersion,
-  debugTimerSimpleMenu,
-  debugTimerDrawText,
-  debugTimerDrawText1,
-
-  debugTimerGetAdc,
-  debugTimerGetSwitches,
-  debugTimerEvalMixes,
-  debugTimerMixes10ms,
-
-  debugTimerAdcRead,
-
-  debugTimerMixerCalcToUsage,
-  debugTimerMixerIterval,
-
-  debugTimerAudioIterval,
-  debugTimerAudioDuration,
-  debugTimerAudioConsume,
-
-  DEBUG_TIMERS_COUNT
-};
 
 extern DebugTimer debugTimers[DEBUG_TIMERS_COUNT];
 extern const char * debugTimerNames[DEBUG_TIMERS_COUNT];
 
 #endif // #if defined(__cplusplus)
-
-#define DEBUG_TIMER_START(timer)  debugTimers[timer].start()
-#define DEBUG_TIMER_STOP(timer)   debugTimers[timer].stop()
-#define DEBUG_TIMER_SAMPLE(timer) debugTimers[timer].sample()
-
 
 #else //#if defined(DEBUG_TIMERS)
 

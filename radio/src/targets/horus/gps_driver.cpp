@@ -76,6 +76,7 @@ void gpsSendByte(uint8_t byte)
 extern "C" void GPS_USART_IRQHandler(void)
 {
   // Send
+  C_DEBUG_TIMER_START(DT_GPS);
   if (USART_GetITStatus(GPS_USART, USART_IT_TXE) != RESET) {
     uint8_t txchar;
     if (gpsTxFifo.pop(txchar)) {
@@ -96,6 +97,7 @@ extern "C" void GPS_USART_IRQHandler(void)
     }
     status = GPS_USART->SR;
   }
+  C_DEBUG_TIMER_STOP(DT_GPS);
 }
 
 uint8_t gpsGetByte(uint8_t * byte)

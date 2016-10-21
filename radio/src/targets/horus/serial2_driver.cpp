@@ -137,6 +137,7 @@ uint8_t serial2TracesEnabled()
 extern "C" void SERIAL_USART_IRQHandler(void)
 {
   DEBUG_INTERRUPT(INT_SER2);
+  C_DEBUG_TIMER_START(DT_SER2);
   // Send
   if (USART_GetITStatus(SERIAL_USART, USART_IT_TXE) != RESET) {
     uint8_t txchar;
@@ -164,4 +165,5 @@ extern "C" void SERIAL_USART_IRQHandler(void)
     status = SERIAL_USART->SR;
   }
 #endif
+  C_DEBUG_TIMER_STOP(DT_SER2);
 }

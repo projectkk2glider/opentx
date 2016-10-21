@@ -93,6 +93,7 @@ OS_STK *InitTaskContext(FUNCPtr task,void *param,OS_STK *pstk)
 void SysTick_Handler(void)
 {
     DEBUG_INTERRUPT(INT_TICK);
+    C_DEBUG_TIMER_START(DT_INT_TICK);
     OSSchedLock++;                  /* Lock scheduler.                        */
     OSTickCnt++;                    /* Increment systerm time.                */
 #if CFG_TASK_WAITTING_EN >0    
@@ -126,4 +127,5 @@ void SysTick_Handler(void)
 #endif
 	TaskSchedReq = Co_TRUE;
     OsSchedUnlock();
+    C_DEBUG_TIMER_STOP(DT_INT_TICK);
 }
